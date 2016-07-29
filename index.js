@@ -1,9 +1,6 @@
 'use strict';
 
-import React from 'react';
-
-
-import ReactNative, {
+import {
     EdgeInsetsPropType,
     Image,
     NativeMethodsMixin,
@@ -16,11 +13,13 @@ import ReactNative, {
     ColorPropType,
 } from 'react-native';
 
+import React from 'react';
+
 import deprecatedPropType from 'react-native/Libraries/Utilities/deprecatedPropType';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 
 
-const RCTBaiduMapConstants = UIManager.RCTBaiduMap.Constants;
+//const RCTBaiduMapConstants = UIManager.RCTBaiduMap.Constants;
 
 type Event = Object;
 
@@ -526,7 +525,7 @@ const BaiduMapView= React.createClass({
           return;
       }
       UIManager.dispatchViewManagerCommand(
-          ReactNative.findNodeHandle(this.refs["baiduMap"]),
+          React.findNodeHandle(this.refs["baiduMap"]),
           UIManager.RCTBaiduMap.Commands.zoomToLocs,
           [locs]
       );
@@ -551,11 +550,16 @@ const styles = StyleSheet.create({
  * you are not obliged to use these, but they are useful for matching
  * the standard iOS look and feel.
  */
-let PinColors = RCTBaiduMapConstants && RCTBaiduMapConstants.PinColors;
-BaiduMapView.PinColors = PinColors && {
+//let PinColors = RCTBaiduMapConstants && RCTBaiduMapConstants.PinColors;
+BaiduMapView.PinColors = {
+/*
   RED: PinColors.RED,
   GREEN: PinColors.GREEN,
   PURPLE: PinColors.PURPLE,
+  */
+  RED: '#fff',
+  GREEN: '#0f0',
+  PURPLE: '#f00',
 };
 
 const RCTBaiduMap = requireNativeComponent('RCTBaiduMap', BaiduMapView, {

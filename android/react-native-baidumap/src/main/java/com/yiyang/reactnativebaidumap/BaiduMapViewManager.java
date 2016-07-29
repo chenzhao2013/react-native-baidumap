@@ -5,13 +5,7 @@ import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.baidu.mapapi.SDKInitializer;
-import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.MapStatus;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.model.LatLngBounds;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
@@ -23,6 +17,13 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 
 /**
  * Created by yiyang on 16/3/1.
@@ -46,8 +47,11 @@ public class BaiduMapViewManager extends SimpleViewManager<MapView> {
 
     @Override
     protected MapView createViewInstance(ThemedReactContext themedReactContext) {
+        //SDKInitializer.initialize(themedReactContext.getApplicationContext());
         SDKInitializer.initialize(themedReactContext.getApplicationContext());
         MapView view = new MapView(themedReactContext);
+        //添加支持定位
+        //view.getMap().setMyLocationEnabled(true);
         mMapView = new ReactMapView(view);
         view.getMap().setOnMapLoadedCallback(new BaiduMap.OnMapLoadedCallback() {
             @Override

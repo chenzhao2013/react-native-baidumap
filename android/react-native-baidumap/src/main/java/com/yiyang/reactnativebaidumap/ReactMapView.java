@@ -6,6 +6,8 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationData;
@@ -214,8 +216,21 @@ public class ReactMapView {
                                 .latitude(bdLocation.getLatitude())
                                 .longitude(bdLocation.getLongitude())
                                 .build();
+                        //getMap().setMyLocationData(locData);
+                       // mMapView.getMap().setMyLocationData(locData);
                         if (getMap().isMyLocationEnabled()) {
+                            LatLng cenpt = new LatLng(bdLocation.getLatitude(),bdLocation.getLongitude());
+                            //定义地图状态
+                            MapStatus mMapStatus = new MapStatus.Builder()
+                                    .target(cenpt)
+                                    .zoom(18)
+                                    .build();
+                            //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
 
+
+                            MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+                            //改变地图状态
+                            getMap().setMapStatus(mMapStatusUpdate);
                             getMap().setMyLocationData(locData);
                         }
                     }
@@ -225,7 +240,11 @@ public class ReactMapView {
                         Log.e("RNBaidumap", "error: " + bdLocation.getLocType());
                     }
                 });
-                mLocationClient.setLocOption(getLocationOption());
+                LocationClientOption option = new LocationClientOption();
+                option.setOpenGps(true); // 打开gps
+                option.setCoorType("bd09ll"); // 设置坐标类型
+                option.setScanSpan(1000);
+                mLocationClient.setLocOption(option);
                 mLocationClient.registerLocationListener(listener);
                 mLocationClient.start();
             } else if (showsUserLocation) {
