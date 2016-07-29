@@ -4,6 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
 import android.net.Uri;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
@@ -27,6 +33,7 @@ import com.facebook.imagepipeline.image.CloseableStaticBitmap;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.react.ReactActivity;
 import com.facebook.react.bridge.ReadableMap;
 
 /**
@@ -86,6 +93,37 @@ public class ReactMapMarker {
             throw new Exception("marker annotation must not be null");
         }
         id = annotation.getString("id");
+
+        int count = annotation.getInt("count");
+       // TextView textView = new TextView(mContext);//
+
+        RelativeLayout relativeLayout = new RelativeLayout(mContext);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+        relativeLayout.setLayoutParams(layoutParams);
+
+
+
+        ImageView imageView = new ImageView(mContext);
+        imageView.setId(new Integer(2));
+        imageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.icon));
+        RelativeLayout.LayoutParams layoutParamsIMG = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+        layoutParamsIMG.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+       // layoutParams.addRule(RelativeLayout.);
+        relativeLayout.addView(imageView,layoutParamsIMG);
+       // TextView textView =(TextView) view.findViewById(R.id.tv_count);
+
+        //view.setDrawingCacheEnabled(true);
+       // Bitmap bitmap111 = getViewFromBitmap(view);
+        TextView textView = new TextView(mContext);
+        textView.setId(new Integer(1));
+        textView.setText(count+"");
+        textView.setTextSize(12);
+        RelativeLayout.LayoutParams layoutParamsTV = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+        //layoutParams.addRule(RelativeLayout.ABOVE,2);
+        layoutParamsTV.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+       // layoutParams.addRule(RelativeLayout.ALIGN_BOTTOM,2);
+       // layoutParams.bottomMargin=28;
+        relativeLayout.addView(textView,layoutParamsTV);
         MarkerOptions options = new MarkerOptions();
         double latitude = annotation.getDouble("latitude");
         double longitude = annotation.getDouble("longitude");
@@ -100,6 +138,9 @@ public class ReactMapMarker {
         if (annotation.hasKey("title")) {
             options.title(annotation.getString("title"));
         }
+
+        defaultIcon = BitmapDescriptorFactory.fromView(relativeLayout);
+      //  defaultIcon = BitmapDescriptorFactory.fromBitmap(bitmap111);
 
         options.icon(defaultIcon);
         this.mOptions = options;

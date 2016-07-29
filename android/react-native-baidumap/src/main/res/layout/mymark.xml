@@ -8,17 +8,15 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/location"
+        android:src="@drawable/icon"
         android:layout_centerInParent="true"
         android:id="@+id/imageView" />
     <TextView
+        android:id="@+id/tv_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="11"
         android:textSize="12sp"
-        android:layout_marginBottom="28dp"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@+id/imageView"
-        android:layout_alignBottom="@id/imageView" />
+        android:layout_centerInParent="true" />
 </RelativeLayout>
 </LinearLayout>

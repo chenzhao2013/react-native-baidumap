@@ -10,6 +10,7 @@ import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
@@ -29,6 +30,7 @@ public class ReactMapView {
     private ReactMapMyLocationConfiguration mConfiguration;
 
     private boolean autoZoomToSpan;
+    boolean isFirstLoc = true;
 
     public boolean isAutoZoomToSpan() {
         return autoZoomToSpan;
@@ -46,6 +48,13 @@ public class ReactMapView {
 
     public ReactMapView(MapView mapView) {
         this.mMapView = mapView;
+        mMapView.getMap().setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                System.out.println(marker.getPosition());
+                return false;
+            }
+        });
     }
 
     public BaiduMap getMap() {
@@ -219,19 +228,27 @@ public class ReactMapView {
                         //getMap().setMyLocationData(locData);
                        // mMapView.getMap().setMyLocationData(locData);
                         if (getMap().isMyLocationEnabled()) {
-                            LatLng cenpt = new LatLng(bdLocation.getLatitude(),bdLocation.getLongitude());
-                            //定义地图状态
-                            MapStatus mMapStatus = new MapStatus.Builder()
-                                    .target(cenpt)
-                                    .zoom(18)
-                                    .build();
-                            //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
-
-
-                            MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-                            //改变地图状态
-                            getMap().setMapStatus(mMapStatusUpdate);
+//                            /*LatLng cenpt = new LatLng(bdLocation.getLatitude(),bdLocation.getLongitude());
+//                            //定义地图状态
+//                            MapStatus mMapStatus = new MapStatus.Builder()
+//                                    .target(cenpt)
+//                                    .zoom(18)
+//                                    .build();
+//                            //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
+//
+//
+//                            MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+//                            //改变地图状态
+//                            getMap().setMapStatus(mMapStatusUpdate);*/
                             getMap().setMyLocationData(locData);
+                            if (isFirstLoc) {
+                                isFirstLoc = false;
+                                LatLng ll = new LatLng(bdLocation.getLatitude(),
+                                        bdLocation.getLongitude());
+                                MapStatus.Builder builder = new MapStatus.Builder();
+                                builder.target(ll).zoom(18.0f);
+                                getMap().animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+                            }
                         }
                     }
 

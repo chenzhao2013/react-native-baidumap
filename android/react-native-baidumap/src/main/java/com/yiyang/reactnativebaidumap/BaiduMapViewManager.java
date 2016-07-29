@@ -5,6 +5,7 @@ import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.baidu.mapapi.map.BaiduMapOptions;
 import com.baidu.mapapi.map.MapView;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -49,9 +50,15 @@ public class BaiduMapViewManager extends SimpleViewManager<MapView> {
     protected MapView createViewInstance(ThemedReactContext themedReactContext) {
         //SDKInitializer.initialize(themedReactContext.getApplicationContext());
         SDKInitializer.initialize(themedReactContext.getApplicationContext());
-        MapView view = new MapView(themedReactContext);
+
+        BaiduMapOptions options = new BaiduMapOptions();
+        options.compassEnabled(true); // 允许指南针
+        options.zoomControlsEnabled(true); // 显示缩放按钮
+        options.scaleControlEnabled(true); // 显示比例尺
+        MapView view = new MapView(themedReactContext,options);
         //添加支持定位
         //view.getMap().setMyLocationEnabled(true);
+        view.removeViewAt(1);
         mMapView = new ReactMapView(view);
         view.getMap().setOnMapLoadedCallback(new BaiduMap.OnMapLoadedCallback() {
             @Override
@@ -75,9 +82,14 @@ public class BaiduMapViewManager extends SimpleViewManager<MapView> {
         mMapView.setShowsUserLocation(show);
     }
 
+    @ReactProp(name="returnUserLocation",defaultBoolean = false)
+    public void returnUserLocation(MapView mapView,Boolean returned){
+        mMapView.setShowsUserLocation(returned);
+    }
     @ReactProp(name="showsCompass", defaultBoolean = false)
     public void showsCompass(MapView mapView, Boolean show) {
         mapView.getMap().getUiSettings().setCompassEnabled(show);
+
     }
 
     @ReactProp(name="zoomEnabled", defaultBoolean = true)

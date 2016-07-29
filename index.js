@@ -56,6 +56,7 @@ const BaiduMapView= React.createClass({
      */
     showsUserLocation: React.PropTypes.bool,
 
+	returnUserLocation: React.PropTypes.bool,
     userLocationViewParams: React.PropTypes.shape({
         /**
          * 定位图标XY轴偏移量(屏幕坐标)
@@ -218,7 +219,10 @@ const BaiduMapView= React.createClass({
        */
       title: React.PropTypes.string,
       subtitle: React.PropTypes.string,
-
+/**
+       * annotation count
+       */
+      count: React.PropTypes.number,
       /**
        * Callout views.
        */
@@ -251,6 +255,7 @@ const BaiduMapView= React.createClass({
        */
       id: React.PropTypes.string,
 
+	  
       /**
        * Deprecated. Use the left/right/detailsCalloutView props instead.
        */
