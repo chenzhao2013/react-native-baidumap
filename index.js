@@ -19,9 +19,6 @@ import React from 'react';
 import deprecatedPropType from 'react-native/Libraries/Utilities/deprecatedPropType';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 
-
-//const RCTBaiduMapConstants = UIManager.RCTBaiduMap.Constants;
-
 type Event = Object;
 
 export type MAAnnotationDragState = $Enum<{
@@ -31,11 +28,7 @@ export type MAAnnotationDragState = $Enum<{
   canceling: string;
   ending: string;
 }>;
-// class Fuck extends React.Component {
-//     render() {
-//         return <View></View>;
-//     }
-// }
+
 const BaiduMapView= React.createClass({
 
   mixins: [NativeMethodsMixin],
@@ -344,10 +337,12 @@ const BaiduMapView= React.createClass({
     active: React.PropTypes.bool,
   },
 
-  componentWillMount: function() {
+  componentDidMount: function() {
+    var self = this;
     DeviceEventEmitter.addListener('onMarkerPress', function(e: Event) {
       console.log('e:', e);
-      this.props.onMarkerPress&&this.props.onMarkerPress(e);
+      alert(JSON.stringify(e));
+      self.props.onMarkerPress&&self.props.onMarkerPress(e);
     });
   },
 
