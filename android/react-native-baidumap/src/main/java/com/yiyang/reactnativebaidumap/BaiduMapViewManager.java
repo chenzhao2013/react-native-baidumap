@@ -7,10 +7,16 @@ import android.util.Log;
 
 import com.baidu.mapapi.map.BaiduMapOptions;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -25,6 +31,8 @@ import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.events.TouchEventType;
 
 /**
  * Created by yiyang on 16/3/1.
@@ -55,7 +63,7 @@ public class BaiduMapViewManager extends SimpleViewManager<MapView> {
         options.compassEnabled(true); // 允许指南针
         options.zoomControlsEnabled(true); // 显示缩放按钮
         options.scaleControlEnabled(true); // 显示比例尺
-        MapView view = new MapView(themedReactContext,options);
+        final MapView view = new MapView(themedReactContext,options);
         //添加支持定位
         //view.getMap().setMyLocationEnabled(true);
         view.removeViewAt(1);
@@ -65,12 +73,38 @@ public class BaiduMapViewManager extends SimpleViewManager<MapView> {
             public void onMapLoaded() {
                 BaiduMapViewManager.this.isMapLoaded = true;
                 mMapView.onMapLoaded();
+                view.getMap().setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        WritableMap event = Arguments.createMap();
+                        event.putString("message", "MyMessage");
+                        //event.putArray("changedTouches", );
+                        ReactContext reactContext = (ReactContext)mContext;
+                        sendEvent(reactContext, "onMarkerPress", event);
+                        return false;
+                    }
+                });
             }
         });
         this.mContext = themedReactContext;
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         return view;
+    }
+
+
+
+    private void sendEvent(ReactContext reactContext,
+                           String eventName,
+                           @Nullable WritableMap params) {
+        try{
+        reactContext
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(eventName, params);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     public ReactMapView getMapView() {

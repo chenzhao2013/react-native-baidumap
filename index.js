@@ -11,6 +11,7 @@ import {
     UIManager,
     processColor,
     ColorPropType,
+    DeviceEventEmitter
 } from 'react-native';
 
 import React from 'react';
@@ -343,6 +344,12 @@ const BaiduMapView= React.createClass({
     active: React.PropTypes.bool,
   },
 
+  componentWillMount: function() {
+    DeviceEventEmitter.addListener('onMarkerPress', function(e: Event) {
+      console.log('e:', e);
+      this.props.onMarkerPress&&this.props.onMarkerPress(e);
+    });
+  },
 
   render: function() {
     let children = [], {annotations, overlays, followUserLocation, userLocationViewParams, showsZoomControl} = this.props;
@@ -429,6 +436,8 @@ const BaiduMapView= React.createClass({
     let onPress, onAnnotationDragStateChange, onAnnotationFocus, onAnnotationBlur;
     if (annotations) {
       onPress = (event: Event) => {
+        //console.log('event:', event);
+        //console.log('event.nativeEvent:', event.nativeEvent);
         if (event.nativeEvent.action === 'annotation-click') {
           // TODO: Remove deprecated onAnnotationPress API call later.
           this.props.onAnnotationPress &&
@@ -512,7 +521,7 @@ const BaiduMapView= React.createClass({
           followUserLocation={followUserLocation}
           showsZoomControl={showsZoomControl}
           overlays={overlays}
-          onPress={onPress}
+          onTouchStart={onPress.bind(this)}
           onChange={onChange}
           onAnnotationDragStateChange={onAnnotationDragStateChange}
           onAnnotationFocus={onAnnotationFocus}
@@ -573,7 +582,7 @@ const RCTBaiduMap = requireNativeComponent('RCTBaiduMap', BaiduMapView, {
     onAnnotationFocus: true,
     onAnnotationBlur: true,
     onChange: true,
-    onPress: true
+    onTouchStart: true
   }
 });
 
