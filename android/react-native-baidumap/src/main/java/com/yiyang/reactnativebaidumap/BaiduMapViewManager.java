@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import android.os.Bundle;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.MapStatus;
@@ -78,6 +79,11 @@ public class BaiduMapViewManager extends SimpleViewManager<MapView> {
                     public boolean onMarkerClick(Marker marker) {
                         WritableMap event = Arguments.createMap();
                         event.putString("message", "MyMessage");
+
+                        Bundle bundle =  marker.getExtraInfo();
+                        String id = (String)bundle.get("id");
+                        event.putString("id",id);
+
                         //event.putArray("changedTouches", );
                         ReactContext reactContext = (ReactContext)mContext;
                         sendEvent(reactContext, "onMarkerPress", event);

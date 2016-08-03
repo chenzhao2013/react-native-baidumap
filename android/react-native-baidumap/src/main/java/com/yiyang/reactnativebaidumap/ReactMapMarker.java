@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import android.os.Bundle;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -127,6 +128,11 @@ public class ReactMapMarker {
         MarkerOptions options = new MarkerOptions();
         double latitude = annotation.getDouble("latitude");
         double longitude = annotation.getDouble("longitude");
+
+        Bundle bundle = new Bundle();
+        bundle.putString("id",id);
+        options.extraInfo(bundle);
+
 
         options.position(new LatLng(latitude, longitude));
         if (annotation.hasKey("draggable")) {
