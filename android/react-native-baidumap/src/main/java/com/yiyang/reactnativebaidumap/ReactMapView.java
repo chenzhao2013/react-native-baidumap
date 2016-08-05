@@ -1,5 +1,6 @@
 package com.yiyang.reactnativebaidumap;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.baidu.location.BDLocation;
@@ -14,6 +15,10 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,13 +53,6 @@ public class ReactMapView {
 
     public ReactMapView(MapView mapView) {
         this.mMapView = mapView;
-        mMapView.getMap().setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                System.out.println(marker.getPosition());
-                return false;
-            }
-        });
     }
 
     public BaiduMap getMap() {
@@ -216,6 +214,12 @@ public class ReactMapView {
                     @Override
                     public void onSuccess(BDLocation bdLocation) {
 
+                        //定位成功之后即返回经纬度和比例尺
+                        WritableMap event = Arguments.createMap();
+                        event.putDouble("latitude", bdLocation.getLatitude());
+                        event.putDouble("longitude",bdLocation.getLongitude());
+                        event.putInt("scale",mMapView.getMapLevel());
+                        sendEvent((ReactContext) mMapView.getContext(),"OnLocationSuccess",event);
                         float radius = 0;
                         if (mConfiguration != null && mConfiguration.isShowAccuracyCircle()) {
                             radius = bdLocation.getRadius();
@@ -248,6 +252,7 @@ public class ReactMapView {
                                 MapStatus.Builder builder = new MapStatus.Builder();
                                 builder.target(ll).zoom(18.0f);
                                 getMap().animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+
                             }
                         }
                     }
@@ -277,7 +282,18 @@ public class ReactMapView {
             }
         }
     }
+    private void sendEvent(ReactContext reactContext,
+                           String eventName,
+                           @Nullable WritableMap params) {
+        try{
+            reactContext
+                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                    .emit(eventName, params);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
+    }
     public void setConfiguration(ReactMapMyLocationConfiguration configuration) {
         this.mConfiguration = configuration;
         this.mConfiguration.setConfigurationUpdateListener(new ReactMapMyLocationConfiguration.ConfigurationUpdateListener() {

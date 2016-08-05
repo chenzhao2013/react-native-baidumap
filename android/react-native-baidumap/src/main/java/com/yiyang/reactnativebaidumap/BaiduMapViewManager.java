@@ -8,6 +8,7 @@ import android.util.Log;
 import com.baidu.mapapi.map.BaiduMapOptions;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.map.UiSettings;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -67,8 +68,10 @@ public class BaiduMapViewManager extends SimpleViewManager<MapView> {
         final MapView view = new MapView(themedReactContext,options);
         //添加支持定位
         //view.getMap().setMyLocationEnabled(true);
+
         view.removeViewAt(1);
         mMapView = new ReactMapView(view);
+        mMapView.getMap().getUiSettings().setCompassEnabled(false);
         view.getMap().setOnMapLoadedCallback(new BaiduMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
@@ -128,7 +131,8 @@ public class BaiduMapViewManager extends SimpleViewManager<MapView> {
     }
     @ReactProp(name="showsCompass", defaultBoolean = false)
     public void showsCompass(MapView mapView, Boolean show) {
-        mapView.getMap().getUiSettings().setCompassEnabled(show);
+        mMapView.getMap().getUiSettings().setCompassEnabled(false);
+        //mapView.getMap().getUiSettings().setCompassEnabled(show);
 
     }
 
