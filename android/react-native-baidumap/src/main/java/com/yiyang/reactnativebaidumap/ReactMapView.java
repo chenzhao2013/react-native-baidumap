@@ -114,7 +114,7 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
         this.mMapView.addView(view, layoutParams);
     }
 
-    
+
 
     public void setOverlays(List<ReactMapOverlay> overlays) {
         List<String> newOverlayIds = new ArrayList<String>();

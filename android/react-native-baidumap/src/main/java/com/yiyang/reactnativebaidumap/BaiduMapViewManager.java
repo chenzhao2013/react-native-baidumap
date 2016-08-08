@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -122,6 +123,10 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     }
 
 
+    @Override
+    public void addView(MapView parent, View child, int index) {
+        super.addView(parent, child, index);
+    }
 
     private void sendEvent(ReactContext reactContext,
                            String eventName,
@@ -135,6 +140,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
         }
 
     }
+
 
     @ReactMethod
     public void navi(MapView mapView,String endCity){
