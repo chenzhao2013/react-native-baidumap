@@ -1,16 +1,19 @@
 package com.yiyang.reactnativebaidumap;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.baidu.mapapi.map.BaiduMapOptions;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MapViewLayoutParams;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.UiSettings;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
@@ -20,6 +23,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import java.util.ArrayList;
@@ -27,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 
 import android.os.Bundle;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.MapStatus;
@@ -39,7 +46,7 @@ import com.facebook.react.uimanager.events.TouchEventType;
 /**
  * Created by yiyang on 16/3/1.
  */
-public class BaiduMapViewManager extends SimpleViewManager<MapView> {
+public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     public static final String RCT_CLASS = "RCTBaiduMap";
 
     public static final int COMMAND_ZOOM_TO_LOCS = 1;
@@ -70,13 +77,16 @@ public class BaiduMapViewManager extends SimpleViewManager<MapView> {
         //view.getMap().setMyLocationEnabled(true);
 
         view.removeViewAt(1);
+
+
         mMapView = new ReactMapView(view);
-        mMapView.getMap().getUiSettings().setCompassEnabled(false);
+        mMapView.getMap().getUiSettings().setCompassEnabled(true);
         view.getMap().setOnMapLoadedCallback(new BaiduMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
                 BaiduMapViewManager.this.isMapLoaded = true;
                 mMapView.onMapLoaded();
+                navi(null,"ss");
                 view.getMap().setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
@@ -93,8 +103,18 @@ public class BaiduMapViewManager extends SimpleViewManager<MapView> {
                         return false;
                     }
                 });
+
             }
         });
+//        MapViewLayoutParams.Builder builder = new MapViewLayoutParams.Builder();
+//        builder.layoutMode(MapViewLayoutParams.ELayoutMode.absoluteMode);
+//        builder.width(10);
+//        builder.height(0);
+//        builder.point(new Point(0, mMapView.getHeight()));
+//        builder.align(MapViewLayoutParams.ALIGN_LEFT, MapViewLayoutParams.ALIGN_BOTTOM);
+//        ImageView imageView = new ImageView(mContext);
+//        imageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.location));
+//        mMapView.addView(imageView,builder.build());
         this.mContext = themedReactContext;
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -114,6 +134,11 @@ public class BaiduMapViewManager extends SimpleViewManager<MapView> {
             e.printStackTrace();
         }
 
+    }
+
+    @ReactMethod
+    public void navi(MapView mapView,String endCity){
+        mMapView.navi(mapView,endCity);
     }
 
     public ReactMapView getMapView() {
@@ -233,7 +258,7 @@ public class BaiduMapViewManager extends SimpleViewManager<MapView> {
         this.mMapView.setConfiguration(configuration);
     }
 
-    @Override
+    //@Override
     public void receiveCommand(MapView root, int commandId, @Nullable ReadableArray args) {
         switch (commandId) {
             case COMMAND_ZOOM_TO_LOCS:

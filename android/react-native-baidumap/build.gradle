@@ -26,7 +26,6 @@ android {
 
 dependencies {
     provided fileTree(include: ['*.jar'], dir: 'libs')
-    provided 'com.android.support:appcompat-v7:23.+'
     provided 'com.facebook.react:react-native:0.20.+'
     compile files('libs/baidumapapi_base_v4_0_0.jar')
     compile files('libs/baidumapapi_map_v4_0_0.jar')
