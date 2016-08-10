@@ -102,8 +102,11 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
 
                         Bundle bundle =  marker.getExtraInfo();
                         String id = (String)bundle.get("id");
+                        Double latitude = bundle.getDouble("latitude");
+                        Double longtide = bundle.getDouble("longtide");
                         event.putString("id",id);
-
+                        event.putDouble("latitude",latitude);
+                        event.putDouble("longtide",longtide);
                         //event.putArray("changedTouches", );
                         ReactContext reactContext = (ReactContext)mContext;
                         sendEvent(reactContext, "onMarkerPress", event);
@@ -139,7 +142,9 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     }
 
 
-    @ReactMethod
+  public void navi(MapView mapView,Double latitude,Double longtide){
+      mMapView.navi(mapView,latitude,longtide);
+  }
     public void navi(MapView mapView,String endCity){
         mMapView.navi(mapView,endCity);
     }
@@ -292,7 +297,8 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
                 "animateToCoordinate", ANIMATE_TO_COORDINATE,
                 "fitToElements", FIT_TO_ELEMENTS,
                 "fitToSuppliedMarkers", FIT_TO_SUPPLIED_MARKERS,
-               "zoomBack",ZOOM_BACK );
+               "zoomBack",ZOOM_BACK,
+                "navi",NAVI);
     }
 
     private void zoomToCenter(MapView mapView, LatLng center) {

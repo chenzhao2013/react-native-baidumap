@@ -102,7 +102,17 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
         return this.mMapView.getHeight();
     }
 
+    public void navi(MapView mapView,double latitude,double longtitude){
+        LatLng endlatLng = new LatLng(latitude,longtitude);
+        PlanNode endNode = PlanNode.withLocation(endlatLng);
+        LatLng startlatLng = new LatLng(mLocationClient.getLastKnownLocation().getLatitude(),mLocationClient.getLastKnownLocation().getLongitude());
+        PlanNode startNode = PlanNode.withLocation(startlatLng);
+        mSearch.drivingSearch((new DrivingRoutePlanOption())
+                .from(startNode).to(endNode));
+    }
     public void navi(MapView mapView, String endCity) {
+
+
         PlanNode stNode = PlanNode.withCityNameAndPlaceName("成都", "红牌楼广场2号写字楼");
         PlanNode enNode = PlanNode.withCityNameAndPlaceName("成都", "四川大学江安校区");
         mSearch.drivingSearch((new DrivingRoutePlanOption())

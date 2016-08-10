@@ -131,6 +131,8 @@ public class ReactMapMarker {
 
         Bundle bundle = new Bundle();
         bundle.putString("id",id);
+        bundle.putDouble("latitude",latitude);
+        bundle.putDouble("longtide",longitude);
         options.extraInfo(bundle);
 
 
