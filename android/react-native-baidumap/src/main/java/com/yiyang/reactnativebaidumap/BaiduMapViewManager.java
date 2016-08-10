@@ -50,8 +50,13 @@ import com.facebook.react.uimanager.events.TouchEventType;
 public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     public static final String RCT_CLASS = "RCTBaiduMap";
 
-    public static final int COMMAND_ZOOM_TO_LOCS = 1;
 
+    private static final int ANIMATE_TO_REGION = 1;
+    private static final int ANIMATE_TO_COORDINATE = 2;
+    private static final int FIT_TO_ELEMENTS = 3;
+    private static final int FIT_TO_SUPPLIED_MARKERS = 4;
+    public static final int COMMAND_ZOOM_TO_LOCS = 5;
+    private  static  final int ZOOM_BACK=6;
     private ReactMapView mMapView;
 
     private Context mContext;
@@ -107,15 +112,6 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
 
             }
         });
-//        MapViewLayoutParams.Builder builder = new MapViewLayoutParams.Builder();
-//        builder.layoutMode(MapViewLayoutParams.ELayoutMode.absoluteMode);
-//        builder.width(10);
-//        builder.height(0);
-//        builder.point(new Point(0, mMapView.getHeight()));
-//        builder.align(MapViewLayoutParams.ALIGN_LEFT, MapViewLayoutParams.ALIGN_BOTTOM);
-//        ImageView imageView = new ImageView(mContext);
-//        imageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.location));
-//        mMapView.addView(imageView,builder.build());
         this.mContext = themedReactContext;
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -156,10 +152,10 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
         mMapView.setShowsUserLocation(show);
     }
 
-    @ReactProp(name="returnUserLocation",defaultBoolean = false)
-    public void returnUserLocation(MapView mapView,Boolean returned){
-        mMapView.setShowsUserLocation(returned);
-    }
+//    @ReactProp(name="returnUserLocation",defaultBoolean = false)
+//    public void returnUserLocation(MapView mapView,Boolean returned){
+//        mMapView.setShowsUserLocation(returned);
+//    }
     @ReactProp(name="showsCompass", defaultBoolean = false)
     public void showsCompass(MapView mapView, Boolean show) {
         mMapView.getMap().getUiSettings().setCompassEnabled(false);
@@ -264,7 +260,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
         this.mMapView.setConfiguration(configuration);
     }
 
-    //@Override
+    @Override
     public void receiveCommand(MapView root, int commandId, @Nullable ReadableArray args) {
         switch (commandId) {
             case COMMAND_ZOOM_TO_LOCS:
@@ -277,6 +273,9 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
                 }
                 this.zoomToLatLngs(root, positions);
                 break;
+            case ZOOM_BACK:
+                System.out.println("==================================\n |                                        ------------------------------------------------------------------------------------------------------------------------------------------------------------------------|");
+                this.mMapView.zoomBack();
             default:
                 break;
         }
@@ -285,7 +284,11 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     @javax.annotation.Nullable
     @Override
     public Map<String, Integer> getCommandsMap() {
-        return MapBuilder.of("zoomToLocs", COMMAND_ZOOM_TO_LOCS);
+        return MapBuilder.of("zoomToLocs", COMMAND_ZOOM_TO_LOCS, "animateToRegion", ANIMATE_TO_REGION,
+                "animateToCoordinate", ANIMATE_TO_COORDINATE,
+                "fitToElements", FIT_TO_ELEMENTS,
+                "fitToSuppliedMarkers", FIT_TO_SUPPLIED_MARKERS,
+               "zoomBack",ZOOM_BACK );
     }
 
     private void zoomToCenter(MapView mapView, LatLng center) {

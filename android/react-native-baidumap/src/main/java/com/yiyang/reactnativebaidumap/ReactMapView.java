@@ -115,7 +115,6 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
     }
 
 
-
     public void setOverlays(List<ReactMapOverlay> overlays) {
         List<String> newOverlayIds = new ArrayList<String>();
         List<ReactMapOverlay> overlaysToDelete = new ArrayList<ReactMapOverlay>();
@@ -270,7 +269,6 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
                 BaiduLocationListener listener = new BaiduLocationListener(mLocationClient, new BaiduLocationListener.ReactLocationCallback() {
                     @Override
                     public void onSuccess(BDLocation bdLocation) {
-
                         //定位成功之后即返回经纬度和比例尺
                         WritableMap event = Arguments.createMap();
                         event.putDouble("latitude", bdLocation.getLatitude());
@@ -286,21 +284,7 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
                                 .latitude(bdLocation.getLatitude())
                                 .longitude(bdLocation.getLongitude())
                                 .build();
-                        //getMap().setMyLocationData(locData);
-                        // mMapView.getMap().setMyLocationData(locData);
                         if (getMap().isMyLocationEnabled()) {
-//                            /*LatLng cenpt = new LatLng(bdLocation.getLatitude(),bdLocation.getLongitude());
-//                            //定义地图状态
-//                            MapStatus mMapStatus = new MapStatus.Builder()
-//                                    .target(cenpt)
-//                                    .zoom(18)
-//                                    .build();
-//                            //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
-//
-//
-//                            MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-//                            //改变地图状态
-//                            getMap().setMapStatus(mMapStatusUpdate);*/
                             getMap().setMyLocationData(locData);
                             if (isFirstLoc) {
                                 isFirstLoc = false;
@@ -340,6 +324,64 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
         }
     }
 
+    public void zoomBack() {
+        if (mLocationClient == null) {
+            mLocationClient = new LocationClient(mMapView.getContext());
+            BaiduLocationListener listener = new BaiduLocationListener(mLocationClient, new BaiduLocationListener.ReactLocationCallback() {
+                @Override
+                public void onSuccess(BDLocation bdLocation) {
+                    System.out.println("================================="+"定位成功"+"============"+"================================");
+                    //定位成功之后即返回经纬度和比例尺
+                    WritableMap event = Arguments.createMap();
+                    event.putDouble("latitude", bdLocation.getLatitude());
+                    event.putDouble("longitude", bdLocation.getLongitude());
+                    event.putInt("scale", mMapView.getMapLevel());
+                    sendEvent((ReactContext) mMapView.getContext(), "OnLocationSuccess", event);
+                    float radius = 0;
+                    //if (mConfiguration != null && mConfiguration.isShowAccuracyCircle()) {
+                        radius = bdLocation.getRadius();
+                   // }
+                    MyLocationData locData = new MyLocationData.Builder()
+                            .accuracy(radius)
+                            .latitude(bdLocation.getLatitude())
+                            .longitude(bdLocation.getLongitude())
+                            .build();
+                   // if (getMap().isMyLocationEnabled()) {
+                        getMap().setMyLocationData(locData);
+                       // if (isFirstLoc) {
+                            isFirstLoc = false;
+                            LatLng ll = new LatLng(bdLocation.getLatitude(),
+                                    bdLocation.getLongitude());
+                    System.out.println("================================="+ll.toString()+"============"+"================================");
+                            MapStatus.Builder builder = new MapStatus.Builder();
+                            builder.target(ll).zoom(18.0f);
+                            getMap().animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+                       // }
+                 //   }
+                }
+
+                @Override
+                public void onFailure(BDLocation bdLocation) {
+                    Log.e("RNBaidumap", "error: " + bdLocation.getLocType());
+                }
+            });
+            LocationClientOption option = new LocationClientOption();
+            option.setOpenGps(true); // 打开gps
+            option.setCoorType("bd09ll"); // 设置坐标类型
+           // option.setScanSpan(1000);
+            mLocationClient.setLocOption(option);
+            mLocationClient.registerLocationListener(listener);
+            mLocationClient.start();
+        }else {
+            LatLng ll = new LatLng(mLocationClient.getLastKnownLocation().getLatitude(),
+                    mLocationClient.getLastKnownLocation().getLongitude());
+            System.out.println("================================="+ll.toString()+"============"+"================================");
+            MapStatus.Builder builder = new MapStatus.Builder();
+            builder.target(ll).zoom(18.0f);
+            getMap().animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+        }
+    }
+
     private void sendEvent(ReactContext reactContext,
                            String eventName,
                            @Nullable WritableMap params) {
@@ -352,6 +394,7 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
         }
 
     }
+
 
     public void setConfiguration(ReactMapMyLocationConfiguration configuration) {
         this.mConfiguration = configuration;
