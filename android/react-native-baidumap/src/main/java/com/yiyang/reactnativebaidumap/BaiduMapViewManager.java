@@ -93,7 +93,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
             public void onMapLoaded() {
                 BaiduMapViewManager.this.isMapLoaded = true;
                 mMapView.onMapLoaded();
-                navi(null,"ss");
+               // navi(null,"ss");
                 view.getMap().setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
@@ -103,10 +103,10 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
                         Bundle bundle =  marker.getExtraInfo();
                         String id = (String)bundle.get("id");
                         Double latitude = bundle.getDouble("latitude");
-                        Double longtide = bundle.getDouble("longtide");
+                        Double longtitude = bundle.getDouble("longtitude");
                         event.putString("id",id);
                         event.putDouble("latitude",latitude);
-                        event.putDouble("longtide",longtide);
+                        event.putDouble("longtitude",longtitude);
                         //event.putArray("changedTouches", );
                         ReactContext reactContext = (ReactContext)mContext;
                         sendEvent(reactContext, "onMarkerPress", event);
@@ -282,9 +282,15 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
             case ZOOM_BACK:
                 System.out.println("==================================\n |                                        ------------------------------------------------------------------------------------------------------------------------------------------------------------------------|");
                 this.mMapView.zoomBack();
+                break;
             case NAVI:
-                String endCity = args.getString(0);
-                this.navi(null,endCity);
+                System.out.println("=================================="+args.toString());
+                System.out.println("0=================================="+args.getDouble(0));
+                System.out.println("1=================================="+args.getDouble(1));
+                Double latitude = args.getDouble(0);
+                Double longtitude = args.getDouble(1);
+                this.navi(null,latitude,longtitude);
+                break;
             default:
                 break;
         }

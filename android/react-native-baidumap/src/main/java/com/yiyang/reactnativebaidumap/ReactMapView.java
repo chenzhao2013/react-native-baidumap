@@ -282,7 +282,7 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
                         //定位成功之后即返回经纬度和比例尺
                         WritableMap event = Arguments.createMap();
                         event.putDouble("latitude", bdLocation.getLatitude());
-                        event.putDouble("longitude", bdLocation.getLongitude());
+                        event.putDouble("longtitude", bdLocation.getLongitude());
                         event.putInt("scale", mMapView.getMapLevel());
                         sendEvent((ReactContext) mMapView.getContext(), "OnLocationSuccess", event);
                         float radius = 0;
@@ -344,7 +344,7 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
                     //定位成功之后即返回经纬度和比例尺
                     WritableMap event = Arguments.createMap();
                     event.putDouble("latitude", bdLocation.getLatitude());
-                    event.putDouble("longitude", bdLocation.getLongitude());
+                    event.putDouble("longtitude", bdLocation.getLongitude());
                     event.putInt("scale", mMapView.getMapLevel());
                     sendEvent((ReactContext) mMapView.getContext(), "OnLocationSuccess", event);
                     float radius = 0;

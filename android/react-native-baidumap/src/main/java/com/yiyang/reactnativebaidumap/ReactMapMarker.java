@@ -127,16 +127,16 @@ public class ReactMapMarker {
         relativeLayout.addView(textView,layoutParamsTV);
         MarkerOptions options = new MarkerOptions();
         double latitude = annotation.getDouble("latitude");
-        double longitude = annotation.getDouble("longitude");
+        double longtitude = annotation.getDouble("longtitude");
 
         Bundle bundle = new Bundle();
         bundle.putString("id",id);
         bundle.putDouble("latitude",latitude);
-        bundle.putDouble("longtide",longitude);
+        bundle.putDouble("longtide",longtitude);
         options.extraInfo(bundle);
 
 
-        options.position(new LatLng(latitude, longitude));
+        options.position(new LatLng(latitude, longtitude));
         if (annotation.hasKey("draggable")) {
 
             boolean draggable = annotation.getBoolean("draggable");
