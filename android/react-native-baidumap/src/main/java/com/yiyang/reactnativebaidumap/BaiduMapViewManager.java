@@ -264,7 +264,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
         this.mMapView.setConfiguration(configuration);
     }
 
-    //@Override
+    @Override
     public void receiveCommand(MapView root, int commandId, @Nullable ReadableArray args) {
         switch (commandId) {
             case COMMAND_ZOOM_TO_LOCS:
