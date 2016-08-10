@@ -341,7 +341,7 @@ const BaiduMapView= React.createClass({
     var self = this;
     DeviceEventEmitter.addListener('onMarkerPress', function(e: Event) {
       console.log('e:', e);
-      alert(JSON.stringify(e));
+      //alert(JSON.stringify(e));
       self.props.onMarkerPress&&self.props.onMarkerPress(e);
     });
   },

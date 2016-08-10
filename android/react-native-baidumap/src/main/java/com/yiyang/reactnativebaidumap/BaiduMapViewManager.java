@@ -57,6 +57,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     private static final int FIT_TO_SUPPLIED_MARKERS = 4;
     public static final int COMMAND_ZOOM_TO_LOCS = 5;
     private  static  final int ZOOM_BACK=6;
+    private static final int NAVI=7;
     private ReactMapView mMapView;
 
     private Context mContext;
@@ -276,6 +277,9 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
             case ZOOM_BACK:
                 System.out.println("==================================\n |                                        ------------------------------------------------------------------------------------------------------------------------------------------------------------------------|");
                 this.mMapView.zoomBack();
+            case NAVI:
+                String endCity = args.getString(0);
+                this.navi(null,endCity);
             default:
                 break;
         }
