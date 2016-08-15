@@ -90,6 +90,12 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
         mSearch.setOnGetRoutePlanResultListener(this);
     }
 
+
+    public void removeOverlay(){
+        if(routeOverlay==null) return;
+        routeOverlay.removeFromMap();
+    }
+
     public BaiduMap getMap() {
         return this.mMapView.getMap();
     }
@@ -102,14 +108,15 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
         return this.mMapView.getHeight();
     }
 
-    public void navi(MapView mapView,double latitude,double longtitude){
-        LatLng endlatLng = new LatLng(latitude,longtitude);
+    public void navi(MapView mapView, double latitude, double longtitude) {
+        LatLng endlatLng = new LatLng(latitude, longtitude);
         PlanNode endNode = PlanNode.withLocation(endlatLng);
-        LatLng startlatLng = new LatLng(mLocationClient.getLastKnownLocation().getLatitude(),mLocationClient.getLastKnownLocation().getLongitude());
+        LatLng startlatLng = new LatLng(mLocationClient.getLastKnownLocation().getLatitude(), mLocationClient.getLastKnownLocation().getLongitude());
         PlanNode startNode = PlanNode.withLocation(startlatLng);
         mSearch.drivingSearch((new DrivingRoutePlanOption())
                 .from(startNode).to(endNode));
     }
+
     public void navi(MapView mapView, String endCity) {
 
 
@@ -122,58 +129,6 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
 
     public void addView(View view, ViewGroup.LayoutParams layoutParams) {
         this.mMapView.addView(view, layoutParams);
-    }
-
-
-    public void setOverlays(List<ReactMapOverlay> overlays) {
-        List<String> newOverlayIds = new ArrayList<String>();
-        List<ReactMapOverlay> overlaysToDelete = new ArrayList<ReactMapOverlay>();
-        List<ReactMapOverlay> overlaysToAdd = new ArrayList<ReactMapOverlay>();
-
-        for (ReactMapOverlay overlay :
-                overlays) {
-            if (overlay instanceof ReactMapOverlay == false) {
-                continue;
-            }
-
-            newOverlayIds.add(overlay.getId());
-
-            if (!mOverlayIds.contains(overlay.getId())) {
-                overlaysToAdd.add(overlay);
-            }
-        }
-
-        for (ReactMapOverlay overlay :
-                this.mOverlays) {
-            if (overlay instanceof ReactMapOverlay == false) {
-                continue;
-            }
-
-            if (!newOverlayIds.contains(overlay.getId())) {
-                overlaysToDelete.add(overlay);
-            }
-        }
-
-        if (!overlaysToDelete.isEmpty()) {
-            for (ReactMapOverlay overlay :
-                    overlaysToDelete) {
-                overlay.getPolyline().remove();
-                this.mOverlays.remove(overlay);
-            }
-        }
-
-        if (!overlaysToAdd.isEmpty()) {
-            for (ReactMapOverlay overlay :
-                    overlaysToAdd) {
-                if (overlay.getOptions() != null) {
-                    overlay.addToMap(this.getMap());
-                    this.mOverlays.add(overlay);
-                }
-            }
-        }
-
-        this.mOverlayIds = newOverlayIds;
-
     }
 
     public void setMarker(List<ReactMapMarker> markers) {
@@ -282,7 +237,7 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
                         //定位成功之后即返回经纬度和比例尺
                         WritableMap event = Arguments.createMap();
                         event.putDouble("latitude", bdLocation.getLatitude());
-                        event.putDouble("longtitude", bdLocation.getLongitude());
+                        event.putDouble("longitude", bdLocation.getLongitude());
                         event.putInt("scale", mMapView.getMapLevel());
                         sendEvent((ReactContext) mMapView.getContext(), "OnLocationSuccess", event);
                         float radius = 0;
@@ -340,34 +295,26 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
             BaiduLocationListener listener = new BaiduLocationListener(mLocationClient, new BaiduLocationListener.ReactLocationCallback() {
                 @Override
                 public void onSuccess(BDLocation bdLocation) {
-                    System.out.println("================================="+"定位成功"+"============"+"================================");
+                    System.out.println("=================================" + "定位成功" + "============" + "================================");
                     //定位成功之后即返回经纬度和比例尺
                     WritableMap event = Arguments.createMap();
                     event.putDouble("latitude", bdLocation.getLatitude());
-                    event.putDouble("longtitude", bdLocation.getLongitude());
+                    event.putDouble("longitude", bdLocation.getLongitude());
                     event.putInt("scale", mMapView.getMapLevel());
                     sendEvent((ReactContext) mMapView.getContext(), "OnLocationSuccess", event);
                     float radius = 0;
-                    //if (mConfiguration != null && mConfiguration.isShowAccuracyCircle()) {
-                        radius = bdLocation.getRadius();
-                   // }
+                    radius = bdLocation.getRadius();
                     MyLocationData locData = new MyLocationData.Builder()
                             .accuracy(radius)
                             .latitude(bdLocation.getLatitude())
                             .longitude(bdLocation.getLongitude())
                             .build();
-                   // if (getMap().isMyLocationEnabled()) {
-                        getMap().setMyLocationData(locData);
-                       // if (isFirstLoc) {
-                            isFirstLoc = false;
-                            LatLng ll = new LatLng(bdLocation.getLatitude(),
-                                    bdLocation.getLongitude());
-                    System.out.println("================================="+ll.toString()+"============"+"================================");
-                            MapStatus.Builder builder = new MapStatus.Builder();
-                            builder.target(ll).zoom(18.0f);
-                            getMap().animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
-                       // }
-                 //   }
+                    getMap().setMyLocationData(locData);
+                    LatLng ll = new LatLng(bdLocation.getLatitude(),
+                            bdLocation.getLongitude());
+                    MapStatus.Builder builder = new MapStatus.Builder();
+                    builder.target(ll).zoom(18.0f);
+                    getMap().animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
                 }
 
                 @Override
@@ -378,14 +325,12 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
             LocationClientOption option = new LocationClientOption();
             option.setOpenGps(true); // 打开gps
             option.setCoorType("bd09ll"); // 设置坐标类型
-           // option.setScanSpan(1000);
             mLocationClient.setLocOption(option);
             mLocationClient.registerLocationListener(listener);
             mLocationClient.start();
-        }else {
+        } else {
             LatLng ll = new LatLng(mLocationClient.getLastKnownLocation().getLatitude(),
                     mLocationClient.getLastKnownLocation().getLongitude());
-            System.out.println("================================="+ll.toString()+"============"+"================================");
             MapStatus.Builder builder = new MapStatus.Builder();
             builder.target(ll).zoom(18.0f);
             getMap().animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
@@ -466,6 +411,7 @@ public class ReactMapView implements OnGetRoutePlanResultListener {
                         overlay.setData(nowResultd.getRouteLines().get(position));
                         overlay.addToMap();
                         overlay.zoomToSpan();
+
                     }
 
                 });

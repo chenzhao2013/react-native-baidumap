@@ -58,6 +58,7 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     public static final int COMMAND_ZOOM_TO_LOCS = 5;
     private  static  final int ZOOM_BACK=6;
     private static final int NAVI=7;
+    private static final int REMOVE_OVERLAY = 8;
     private ReactMapView mMapView;
 
     private Context mContext;
@@ -103,10 +104,10 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
                         Bundle bundle =  marker.getExtraInfo();
                         String id = (String)bundle.get("id");
                         Double latitude = bundle.getDouble("latitude");
-                        Double longtitude = bundle.getDouble("longtitude");
+                        Double longitude = bundle.getDouble("longitude");
                         event.putString("id",id);
                         event.putDouble("latitude",latitude);
-                        event.putDouble("longtitude",longtitude);
+                        event.putDouble("longitude",longitude);
                         //event.putArray("changedTouches", );
                         ReactContext reactContext = (ReactContext)mContext;
                         sendEvent(reactContext, "onMarkerPress", event);
@@ -142,8 +143,8 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
     }
 
 
-  public void navi(MapView mapView,Double latitude,Double longtide){
-      mMapView.navi(mapView,latitude,longtide);
+  public void navi(MapView mapView,Double latitude,Double longitude){
+      mMapView.navi(mapView,latitude,longitude);
   }
     public void navi(MapView mapView,String endCity){
         mMapView.navi(mapView,endCity);
@@ -223,29 +224,29 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
 
     }
 
-    @ReactProp(name = "overlays")
-    public void setOverlays(MapView mapView, @Nullable ReadableArray value) throws Exception{
-        if (value == null || value.size() == 0) {
-            return;
-        }
-
-        List<ReactMapOverlay> overlays = new ArrayList<ReactMapOverlay>();
-        int size = value.size();
-        for(int i = 0; i < size; i++) {
-            ReadableMap overlay = value.getMap(i);
-            ReactMapOverlay polyline = new ReactMapOverlay(overlay);
-            if (polyline.getOptions() != null && polyline.getOptions().getPoints() != null && polyline.getOptions().getPoints().size() > 1) {
-                overlays.add(polyline);
-            }
-        }
-
-        getMapView().setOverlays(overlays);
-
-
-        if (this.isMapLoaded && this.mMapView.isAutoZoomToSpan()) {
-            this.mMapView.zoomToSpan();
-        }
-    }
+//    @ReactProp(name = "overlays")
+//    public void setOverlays(MapView mapView, @Nullable ReadableArray value) throws Exception{
+//        if (value == null || value.size() == 0) {
+//            return;
+//        }
+//
+//        List<ReactMapOverlay> overlays = new ArrayList<ReactMapOverlay>();
+//        int size = value.size();
+//        for(int i = 0; i < size; i++) {
+//            ReadableMap overlay = value.getMap(i);
+//            ReactMapOverlay polyline = new ReactMapOverlay(overlay);
+//            if (polyline.getOptions() != null && polyline.getOptions().getPoints() != null && polyline.getOptions().getPoints().size() > 1) {
+//                overlays.add(polyline);
+//            }
+//        }
+//
+//        getMapView().setOverlays(overlays);
+//
+//
+//        if (this.isMapLoaded && this.mMapView.isAutoZoomToSpan()) {
+//            this.mMapView.zoomToSpan();
+//        }
+//    }
 
     @ReactProp(name = "region")
     public void setRegion(MapView mapView, @Nullable ReadableMap center) {
@@ -287,24 +288,32 @@ public class BaiduMapViewManager extends ViewGroupManager<MapView> {
                 System.out.println("=================================="+args.toString());
                 System.out.println("0=================================="+args.getDouble(0));
                 System.out.println("1=================================="+args.getDouble(1));
+
                 Double latitude = args.getDouble(0);
-                Double longtitude = args.getDouble(1);
-                this.navi(null,latitude,longtitude);
+                Double longitude = args.getDouble(1);
+                this.navi(null,latitude,longitude);
                 break;
+            case REMOVE_OVERLAY:
+                mMapView.removeOverlay();
+                mMapView.zoomBack();
             default:
                 break;
         }
     }
 
+    /**
+     * 这个方法只能接受七个指令
+     * @return
+     */
     @javax.annotation.Nullable
     @Override
     public Map<String, Integer> getCommandsMap() {
         return MapBuilder.of("zoomToLocs", COMMAND_ZOOM_TO_LOCS, "animateToRegion", ANIMATE_TO_REGION,
                 "animateToCoordinate", ANIMATE_TO_COORDINATE,
                 "fitToElements", FIT_TO_ELEMENTS,
-                "fitToSuppliedMarkers", FIT_TO_SUPPLIED_MARKERS,
                "zoomBack",ZOOM_BACK,
-                "navi",NAVI);
+                "navi",NAVI,
+                "removeOverlay",REMOVE_OVERLAY);
     }
 
     private void zoomToCenter(MapView mapView, LatLng center) {
